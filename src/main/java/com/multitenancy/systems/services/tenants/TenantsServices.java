@@ -76,4 +76,8 @@ public class TenantsServices {
         return tenantRepository.findAll();
     }
 
+    public Tenants getDetailTenant(String id) {
+        return tenantRepository.getReferenceById(id);
+    }
+
 }

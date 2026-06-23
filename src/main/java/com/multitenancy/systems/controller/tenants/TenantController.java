@@ -1,6 +1,7 @@
 package com.multitenancy.systems.controller.tenants;
 
 
+import com.multitenancy.systems.dto.tenants.TenantDetailsResponse;
 import com.multitenancy.systems.dto.tenants.TenantListResponse;
 import com.multitenancy.systems.dto.tenants.TenantResponse;
 import com.multitenancy.systems.dto.tenants.TenantRequest;
@@ -42,6 +43,18 @@ public class TenantController {
 
         response.setSuccess(true);
         response.setMessage("OK!");
+        response.setData(responseData);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TenantDetailsResponse> getDetailTenant(@PathVariable String id){
+        Tenants responseData = tenantsServices.getDetailTenant(id);
+        TenantDetailsResponse response = new TenantDetailsResponse();
+
+        response.setSuccess(true);
+        response.setMessage("OK");
         response.setData(responseData);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
