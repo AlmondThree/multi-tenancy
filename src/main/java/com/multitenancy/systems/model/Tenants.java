@@ -4,8 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name= "tenants", schema = "public")
@@ -58,7 +63,7 @@ public class Tenants {
 
     public Tenants(){};
 
-    public Tenants(String Id, String name, String shortName, String address, String country, String industrySector, String email, String contact, String contact1, String organizationLogo, String organizationWebsite, String adminAccount, String ldap, Boolean active, LocalDateTime createdDate) {
+    public Tenants(String Id, String name, String shortName, String address, String country, String industrySector, String email, String contact, String organizationLogo, String organizationWebsite, String adminAccount, String ldap, Boolean active) {
         this.id = Id;
         this.name = name;
         this.shortName = shortName;
@@ -72,6 +77,5 @@ public class Tenants {
         this.adminAccount = adminAccount;
         this.ldap = ldap;
         this.isActive = active;
-        this.createdDate = createdDate;
     }
 }
