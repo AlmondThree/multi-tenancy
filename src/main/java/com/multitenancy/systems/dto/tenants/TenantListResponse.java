@@ -14,10 +14,8 @@ import java.util.List;
 @JsonPropertyOrder({"isSuccess", "message", "data"})
 public class TenantListResponse {
     @JsonProperty("isSuccess")
-    private boolean isSuccess;
+    private boolean success;
     private String message;
     private List<Tenants> data;
 
-    @JsonIgnore
-    private boolean success;
 }
