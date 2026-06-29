@@ -1,12 +1,15 @@
-package com.multitenancy.systems.controller.tenants;
+package com.multitenancy.systems.controller.v1.tenants;
 
 
 import com.multitenancy.systems.dto.tenants.TenantDetailsResponse;
 import com.multitenancy.systems.dto.tenants.TenantListResponse;
 import com.multitenancy.systems.dto.tenants.TenantResponse;
 import com.multitenancy.systems.dto.tenants.TenantRequest;
+import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.model.Tenants;
 import com.multitenancy.systems.services.tenants.TenantsServices;
+import com.multitenancy.systems.util.format.Pages;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tenants")
+@RequestMapping("/v1/tenants")
 public class TenantController {
     private final TenantsServices tenantsServices;
 
@@ -35,22 +38,49 @@ public class TenantController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<TenantListResponse> getListTenant() {
+    public ResponseEntity<TenantListResponse> getListTenant(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "ASC") String ordered,
+            @RequestParam String country
+    ) {
 
-        List<Tenants> responseData = tenantsServices.getListTenant();
+        Integer targetPage = (page < 1) ? 0 : page - 1;
 
-        TenantListResponse response = new TenantListResponse();
+        Page<Tenants> responseData = tenantsServices.getListTenant(
+                targetPage,
+                size,
+                country,
+                ordered
+        );
 
-        response.setSuccess(true);
-        response.setMessage("OK!");
-        response.setData(responseData);
+        if(responseData.isEmpty()) {
+            throw new DataNotFoundException("Data not found");
+        }
+
+        Pages pages = new Pages(
+                responseData.getNumber() + 1,
+                responseData.getNumberOfElements(),
+                (long) responseData.getTotalPages(),
+                responseData.getTotalElements(),
+                null,
+                null
+        );
+
+        TenantListResponse response = new TenantListResponse(
+                true,
+                "OK!",
+                pages,
+                responseData.getContent()
+        );
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TenantDetailsResponse> getDetailTenant(@PathVariable String id){
-        Tenants responseData = tenantsServices.getDetailTenant(id);
+        Tenants responseData = tenantsServices.getDetailTenant(id)
+                .orElseThrow(() -> new DataNotFoundException(String.format("Data with Id: %s is not found", id)));
         TenantDetailsResponse response = new TenantDetailsResponse();
 
         response.setSuccess(true);

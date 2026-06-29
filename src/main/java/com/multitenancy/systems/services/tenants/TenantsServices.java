@@ -4,10 +4,15 @@ import com.multitenancy.systems.dto.tenants.TenantResponse;
 import com.multitenancy.systems.dto.tenants.TenantRequest;
 import com.multitenancy.systems.model.Tenants;
 import com.multitenancy.systems.repository.TenantRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -72,12 +77,20 @@ public class TenantsServices {
         return new TenantResponse(true, "OK!", tenantData.getId());
     }
 
-    public List<Tenants> getListTenant() {
-        return tenantRepository.findAll();
+    public Page<Tenants> getListTenant(
+            Integer page,
+            Integer size,
+            String country,
+            String ordered
+    ) {
+        Sort sort = ordered.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by("Id").ascending() : Sort.by("Id").descending();
+        Pageable pages = (Pageable) PageRequest.of(page, size, sort);
+        return tenantRepository.findByCountry(country, pages);
     }
 
-    public Tenants getDetailTenant(String id) {
-        return tenantRepository.getReferenceById(id);
+    public Optional<Tenants> getDetailTenant(String id) {
+        return tenantRepository.findById(id);
     }
 
 }

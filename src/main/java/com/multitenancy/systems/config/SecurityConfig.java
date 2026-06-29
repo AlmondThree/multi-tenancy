@@ -1,6 +1,7 @@
 package com.multitenancy.systems.config;
 
-import com.multitenancy.systems.auth.AuthenticationFilter;
+import com.multitenancy.systems.auth.ApiKeyAuthFilter;
+import com.multitenancy.systems.auth.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -15,17 +16,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final AuthenticationService authenticationService;
+
+    public SecurityConfig(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/projects/**").permitAll()
+                        .requestMatchers("/").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new ApiKeyAuthFilter(authenticationService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
