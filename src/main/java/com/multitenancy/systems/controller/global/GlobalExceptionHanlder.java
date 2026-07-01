@@ -3,6 +3,7 @@ package com.multitenancy.systems.controller.global;
 import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.exceptions.ResourceNotFoundException;
 import com.multitenancy.systems.util.format.DefaultResponseFormat;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class GlobalExceptionHanlder {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHanlder.class);
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<DefaultResponseFormat> generalErrorHandler (Exception exception) {
+    public ResponseEntity<DefaultResponseFormat> generalErrorHandler (Exception exception, HttpServletRequest request) {
         String errorId = UUID.randomUUID().toString();
 
         logger.error("[Error Id: {}] Failure: {}", errorId, exception.getMessage());
@@ -29,6 +30,9 @@ public class GlobalExceptionHanlder {
         res.setSuccess(true);
         res.setMessage("Internal Server Error");
         res.setErrorId(errorId);
+
+        request.setAttribute("AdviceIDError", errorId);
+        request.setAttribute("messageError", exception.getMessage());
 
         return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
     }
