@@ -15,4 +15,21 @@ public class DefaultResponseFormat {
     private Boolean success;
     private String message;
     private String errorId;
+    private String id;
+
+    public DefaultResponseFormat() {}
+
+    public DefaultResponseFormat(Boolean success, String message, String errorId, String id) {
+        this.success = success;
+        this.message = message;
+        this.errorId = errorId;
+        this.id = id;
+    }
+
+    public DefaultResponseFormat(Boolean success, String message, String id) {
+        this.success = success;
+        this.message = message;
+        this.id = id;
+    }
+
 }
