@@ -4,17 +4,22 @@ import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import lombok.Getter;
 import org.springframework.util.StreamUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
+@Getter
 public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
 
     private final byte[] cachedBody;
 
     public CachedBodyHttpServletRequest(HttpServletRequest request) throws IOException {
         super(request);
-        this.cachedBody = StreamUtils.copyToByteArray(request.getInputStream());
+        // Menyalin data stream request asli ke dalam byte array internal saat pertama kali dibuat
+        InputStream requestInputStream = request.getInputStream();
+        this.cachedBody = StreamUtils.copyToByteArray(requestInputStream);
     }
 
     @Override
@@ -40,5 +45,9 @@ public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
                 return byteArrayInputStream.read();
             }
         };
+    }
+
+    public byte[] getCachedBody() {
+        return this.cachedBody;
     }
 }

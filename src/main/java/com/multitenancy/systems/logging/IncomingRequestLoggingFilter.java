@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Component
+@Order(1)
 public class IncomingRequestLoggingFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(IncomingRequestLoggingFilter.class);
@@ -28,17 +29,25 @@ public class IncomingRequestLoggingFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilterErrorDispatch() {
+        return true;
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        if (request.getRequestURI().endsWith("/error")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String traceId = UUID.randomUUID().toString();
         MDC.put("traceId", traceId.substring(0, 8));
 
         String authHeader = request.getHeader("Authorization");
         String accessToken = (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null;
-
         String activityHeader = request.getHeader("x-activity-id");
-
         String userId = request.getHeader("x-user-id") != null ? request.getHeader("x-user-id") : "SYSTEM";
 
         CachedBodyHttpServletRequest cachedRequest = new CachedBodyHttpServletRequest(request);
@@ -52,7 +61,7 @@ public class IncomingRequestLoggingFilter extends OncePerRequestFilter {
             long duration = System.currentTimeMillis() - startTime;
 
             try {
-                byte[] reqBytes = StreamUtils.copyToByteArray(cachedRequest.getInputStream());
+                byte[] reqBytes = cachedRequest.getCachedBody();
                 String reqBody = new String(reqBytes, StandardCharsets.UTF_8).trim();
                 reqBody = reqBody.isEmpty() ? "{}" : reqBody;
 
@@ -66,8 +75,8 @@ public class IncomingRequestLoggingFilter extends OncePerRequestFilter {
                 String finalErrorMessage = null;
                 if (idErrorFromAdvice != null) {
                     finalErrorMessage = "[" + idErrorFromAdvice + "] " + messageFromAdvice;
-                } else if (response.getStatus() >= 400) {
-                    finalErrorMessage = "HTTP Error Status: " + response.getStatus();
+                } else if (cachedResponse.getStatus() >= 400) {
+                    finalErrorMessage = "HTTP Error Status: " + cachedResponse.getStatus();
                 }
 
                 TransactionLogEvent logEvent = new TransactionLogEvent(
@@ -75,11 +84,10 @@ public class IncomingRequestLoggingFilter extends OncePerRequestFilter {
                 );
                 eventPublisher.publishEvent(logEvent);
 
-                cachedResponse.copyBodyToResponse();
-
             } catch (Exception e) {
-                log.error("Error Extract Payload from Servlet", e);
+                log.error("Gagal melakukan ekstraksi payload untuk log transaksi", e);
             } finally {
+                cachedResponse.copyBodyToResponse();
                 MDC.clear();
             }
         }
