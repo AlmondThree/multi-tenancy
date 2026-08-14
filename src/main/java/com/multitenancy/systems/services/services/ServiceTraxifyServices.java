@@ -30,6 +30,8 @@ public class ServiceTraxifyServices {
                 request.getPrice(),
                 request.getPricingMethods(),
                 request.getValidityPeriod(),
+                request.getServiceUrl(),
+                request.getServiceLogo(),
                 request.getUnit(),
                 request.getIsActive()
         );
@@ -54,6 +56,8 @@ public class ServiceTraxifyServices {
         if (request.getPrice() != null) {data.setPrice(request.getPrice());}
         if (request.getPricingMethods() != null && !request.getPricingMethods().isBlank()) {data.setPricingMethods(request.getPricingMethods());}
         if (request.getValidityPeriod() != null) {data.setValidityPeriod(request.getValidityPeriod());}
+        if (request.getServiceUrl() != null && !request.getServiceUrl().isBlank()) {data.setServiceUrl(request.getServiceUrl());}
+        if (request.getServiceLogo() != null && !request.getServiceLogo().isBlank()) {data.setServiceLogo(request.getServiceLogo());}
         if (request.getUnit() != null && !request.getUnit().isBlank()) {data.setUnit(request.getUnit());}
         if (request.getIsActive() != null) {data.setIsActive(request.getIsActive());}
 

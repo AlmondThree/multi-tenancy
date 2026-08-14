@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 
-@JsonPropertyOrder({"Id", "name", "description", "code", "price", "pricingMethods", "validityPeriod", "unit", "isActive", "createdDate", "createdBy", "updatedDate", "updatedBy"})
+@JsonPropertyOrder({"Id", "name", "description", "code", "price", "pricingMethods", "validityPeriod", "unit", "serviceUrl", "serviceLogo", "isActive", "createdDate", "createdBy", "updatedDate", "updatedBy"})
 
 @Entity
 @Table(name = "services")
@@ -42,6 +42,12 @@ public class Services {
     @Column(name = "unit", nullable = false)
     private String unit;
 
+    @Column(name = "service_url", nullable = false)
+    private String serviceUrl;
+
+    @Column(name = "service_logo", nullable = false)
+    private String serviceLogo;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
@@ -59,13 +65,15 @@ public class Services {
 
     public Services() {}
 
-    public Services(String name, String description, String code, Long price, String pricingMethods, Long validityPeriod, String unit, Boolean isActive) {
+    public Services(String name, String description, String code, Long price, String pricingMethods, Long validityPeriod, String unit, String serviceUrl, String serviceLogo, Boolean isActive) {
         this.name = name;
         this.description = description;
         this.code = code;
         this.price = price;
         this.pricingMethods = pricingMethods;
         this.validityPeriod = validityPeriod;
+        this.serviceUrl = serviceUrl;
+        this.serviceLogo = serviceLogo;
         this.unit = unit;
         this.isActive = isActive;
     }
