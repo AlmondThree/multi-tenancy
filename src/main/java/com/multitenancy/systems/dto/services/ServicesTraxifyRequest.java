@@ -24,6 +24,10 @@ public class ServicesTraxifyRequest {
 
     private String unit;
 
+    private String serviceUrl;
+
+    private String serviceLogo;
+
     @JsonProperty("isActive")
     private Boolean isActive;
 
