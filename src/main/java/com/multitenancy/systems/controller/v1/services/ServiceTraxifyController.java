@@ -78,7 +78,8 @@ public class ServiceTraxifyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ServiceTraxifyDetailResponse> getDetailServicesTraxify(@PathVariable String id) {
-        Services responseData = serviceTraxifyServices.getDetailServices(id);
+        Services responseData = serviceTraxifyServices.getDetailServices(id)
+                .orElseThrow(() -> new DataNotFoundException(String.format("Data with Id: %s is not found", id)));
 
         ServiceTraxifyDetailResponse response = new ServiceTraxifyDetailResponse(
                 true,

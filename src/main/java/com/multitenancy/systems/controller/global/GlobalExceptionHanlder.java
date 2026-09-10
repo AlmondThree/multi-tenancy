@@ -1,5 +1,6 @@
 package com.multitenancy.systems.controller.global;
 
+import com.multitenancy.systems.exceptions.BadRequestException;
 import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.exceptions.ResourceNotFoundException;
 import com.multitenancy.systems.util.format.DefaultResponseFormat;
@@ -10,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.UUID;
@@ -87,6 +90,34 @@ public class GlobalExceptionHanlder {
         return new ResponseEntity<DefaultResponseFormat>(
                 res,
                 HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<DefaultResponseFormat> missingRequestHeaderHandler(MissingRequestHeaderException exception) {
+
+        DefaultResponseFormat res = new DefaultResponseFormat();
+
+        res.setSuccess(false);
+        res.setMessage(exception.getMessage());
+
+        return new ResponseEntity<DefaultResponseFormat>(
+                res,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<DefaultResponseFormat> badRequestHandler(BadRequestException exception) {
+
+        DefaultResponseFormat res = new DefaultResponseFormat();
+
+        res.setSuccess(false);
+        res.setMessage(exception.getMessage());
+
+        return new ResponseEntity<DefaultResponseFormat>(
+                res,
+                HttpStatus.BAD_REQUEST
         );
     }
 

@@ -42,7 +42,7 @@ public class TenantController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "ASC") String ordered,
-            @RequestParam String country
+            @RequestParam (defaultValue = "") String country
     ) {
 
         Integer targetPage = (page < 1) ? 0 : page - 1;
