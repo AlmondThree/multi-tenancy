@@ -1,7 +1,6 @@
 package com.multitenancy.systems.services.services;
 
 import com.multitenancy.systems.dto.services.ServicesTraxifyRequest;
-import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.model.Services;
 import com.multitenancy.systems.repository.ServiceTraxifyRepository;
 import com.multitenancy.systems.util.format.DefaultResponseFormat;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -89,11 +89,10 @@ public class ServiceTraxifyServices {
         return serviceTraxifyRepository.findAll(pages);
     }
 
-    public Services getDetailServices(String id) {
+    public Optional<Services> getDetailServices(String id) {
         UUID paramId = UUID.fromString(id);
 
-        return serviceTraxifyRepository.findById(paramId)
-                .orElseThrow(() -> new DataNotFoundException(String.format("Data with Id: %s is not found", id)));
+        return serviceTraxifyRepository.findById(paramId);
     }
 
 }

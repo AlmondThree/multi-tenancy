@@ -86,7 +86,11 @@ public class TenantsServices {
         Sort sort = ordered.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by("Id").ascending() : Sort.by("Id").descending();
         Pageable pages = (Pageable) PageRequest.of(page, size, sort);
-        return tenantRepository.findByCountry(country, pages);
+        if(country.isBlank()) {
+            return tenantRepository.findAll(pages);
+        } else {
+            return tenantRepository.findByCountry(country, pages);
+        }
     }
 
     public Optional<Tenants> getDetailTenant(String id) {
