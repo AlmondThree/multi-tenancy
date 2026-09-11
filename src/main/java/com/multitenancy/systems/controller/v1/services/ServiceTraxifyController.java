@@ -37,9 +37,10 @@ public class ServiceTraxifyController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "ASC") String ordered,
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "") String code,
-            @RequestParam(defaultValue = "") String pricingMethods
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String pricingMethods,
+            @RequestParam(required = false) Boolean isActive
     ){
         Integer targetPage = (page < 1) ? 0 : page - 1;
 
@@ -49,6 +50,7 @@ public class ServiceTraxifyController {
                 name,
                 code,
                 pricingMethods,
+                isActive,
                 ordered
         );
 

@@ -3,11 +3,13 @@ package com.multitenancy.systems.services.services;
 import com.multitenancy.systems.dto.services.ServicesTraxifyRequest;
 import com.multitenancy.systems.model.Services;
 import com.multitenancy.systems.repository.ServiceTraxifyRepository;
+import com.multitenancy.systems.specification.ServicesSpecification;
 import com.multitenancy.systems.util.format.DefaultResponseFormat;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -72,21 +74,21 @@ public class ServiceTraxifyServices {
             String name,
             String code,
             String pricingMethods,
+            Boolean isActive,
             String ordered
     ) {
         Sort sort = ordered.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by("createdDate").ascending() : Sort.by("createdDate").descending();
         Pageable pages = PageRequest.of(page, size, sort);
 
-        if(name != null && !name.isBlank()){
-            return serviceTraxifyRepository.findByName(name, pages);
-        } else if (code != null && !code.isBlank()) {
-            return serviceTraxifyRepository.findByCode(code, pages);
-        } else if (pricingMethods != null && !pricingMethods.isBlank()) {
-            return serviceTraxifyRepository.findByPricingMethods(pricingMethods, pages);
-        }
-
-        return serviceTraxifyRepository.findAll(pages);
+        return serviceTraxifyRepository.findAll(
+                Specification.where(ServicesSpecification.hasName(name)
+                        .and(ServicesSpecification.hasCode(code))
+                        .and(ServicesSpecification.hasPricingMethods(pricingMethods))
+                        .and(ServicesSpecification.hasIsActive(isActive))
+                )
+                , pages
+        );
     }
 
     public Optional<Services> getDetailServices(String id) {
