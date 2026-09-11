@@ -30,6 +30,8 @@ public class TenantRequest {
 
     private String adminAccount;
 
+    private String tenantType;
+
     private String ldap;
 
     @JsonProperty("isActive")

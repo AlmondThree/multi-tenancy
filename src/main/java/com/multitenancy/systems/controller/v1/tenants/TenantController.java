@@ -42,7 +42,16 @@ public class TenantController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "ASC") String ordered,
-            @RequestParam (defaultValue = "") String country
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String shortName,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) String industrySector,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String contact,
+            @RequestParam(required = false) String adminAccount,
+            @RequestParam(required = false) String tenantType,
+            @RequestParam(required = false) Boolean isActive
     ) {
 
         Integer targetPage = (page < 1) ? 0 : page - 1;
@@ -50,8 +59,17 @@ public class TenantController {
         Page<Tenants> responseData = tenantsServices.getListTenant(
                 targetPage,
                 size,
+                ordered,
+                name,
+                shortName,
+                address,
                 country,
-                ordered
+                industrySector,
+                email,
+                contact,
+                adminAccount,
+                tenantType,
+                isActive
         );
 
         if(responseData.isEmpty()) {

@@ -4,10 +4,12 @@ import com.multitenancy.systems.dto.tenants.TenantResponse;
 import com.multitenancy.systems.dto.tenants.TenantRequest;
 import com.multitenancy.systems.model.Tenants;
 import com.multitenancy.systems.repository.TenantRepository;
+import com.multitenancy.systems.specification.TenantSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,6 +42,7 @@ public class TenantsServices {
                 request.getOrganizationLogo(),
                 request.getOrganizationWebsite(),
                 request.getAdminAccount(),
+                request.getTenantType(),
                 request.getLdap(),
                 request.getIsActive()
         );
@@ -67,6 +70,7 @@ public class TenantsServices {
         if(request.getOrganizationLogo() != null && !request.getOrganizationLogo().isBlank()) {tenantData.setOrganizationLogo(request.getOrganizationLogo());}
         if(request.getOrganizationWebsite() != null && !request.getOrganizationWebsite().isBlank()) {tenantData.setOrganizationWebsite(request.getOrganizationWebsite());}
         if(request.getAdminAccount() != null && !request.getAdminAccount().isBlank()) {tenantData.setAdminAccount(request.getAdminAccount());}
+        if(request.getTenantType() != null && !request.getTenantType().isBlank()) {tenantData.setTenantType(request.getTenantType());}
         if(request.getLdap() != null && !request.getLdap().isBlank()) {tenantData.setLdap(request.getLdap());}
         if(request.getIsActive() != null) {tenantData.setIsActive(request.getIsActive());}
 
@@ -80,17 +84,37 @@ public class TenantsServices {
     public Page<Tenants> getListTenant(
             Integer page,
             Integer size,
+            String ordered,
+            String name,
+            String shortName,
+            String address,
             String country,
-            String ordered
+            String industrySector,
+            String email,
+            String contact,
+            String adminAccount,
+            String tenantType,
+            Boolean isActive
     ) {
         Sort sort = ordered.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by("Id").ascending() : Sort.by("Id").descending();
         Pageable pages = (Pageable) PageRequest.of(page, size, sort);
-        if(country.isBlank()) {
-            return tenantRepository.findAll(pages);
-        } else {
-            return tenantRepository.findByCountry(country, pages);
-        }
+
+        return tenantRepository.findAll(
+                Specification.where(TenantSpecifications.hasName(name)
+                        .and(TenantSpecifications.hasShortName(shortName))
+                        .and(TenantSpecifications.hasAddress(address))
+                        .and(TenantSpecifications.hasCountry(country))
+                        .and(TenantSpecifications.hasIndustrySector(industrySector))
+                        .and(TenantSpecifications.hasEmail(email))
+                        .and(TenantSpecifications.hasContact(contact))
+                        .and(TenantSpecifications.hasAdminAccount(adminAccount))
+                        .and(TenantSpecifications.hasTenantType(tenantType))
+                        .and(TenantSpecifications.hasIsActive(isActive))
+                ),
+                pages
+        );
+
     }
 
     public Optional<Tenants> getDetailTenant(String id) {

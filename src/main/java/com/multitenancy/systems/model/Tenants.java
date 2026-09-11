@@ -49,6 +49,9 @@ public class Tenants {
     @Column(name = "admin_account", nullable = false, length = 200)
     private String adminAccount;
 
+    @Column(name = "tenant_type", nullable = false, length = 200)
+    private String tenantType;
+
     @Column(nullable = true, length = 200)
     private String ldap;
 
@@ -63,7 +66,7 @@ public class Tenants {
 
     public Tenants(){};
 
-    public Tenants(String Id, String name, String shortName, String address, String country, String industrySector, String email, String contact, String organizationLogo, String organizationWebsite, String adminAccount, String ldap, Boolean active) {
+    public Tenants(String Id, String name, String shortName, String address, String country, String industrySector, String email, String contact, String organizationLogo, String organizationWebsite, String adminAccount, String tenantType, String ldap, Boolean active) {
         this.id = Id;
         this.name = name;
         this.shortName = shortName;
@@ -75,6 +78,7 @@ public class Tenants {
         this.organizationLogo = organizationLogo;
         this.organizationWebsite = organizationWebsite;
         this.adminAccount = adminAccount;
+        this.tenantType = tenantType;
         this.ldap = ldap;
         this.isActive = active;
     }
