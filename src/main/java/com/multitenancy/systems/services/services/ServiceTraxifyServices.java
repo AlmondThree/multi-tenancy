@@ -1,6 +1,8 @@
 package com.multitenancy.systems.services.services;
 
 import com.multitenancy.systems.dto.services.ServicesTraxifyRequest;
+import com.multitenancy.systems.exceptions.BadRequestException;
+import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.model.Services;
 import com.multitenancy.systems.repository.ServiceTraxifyRepository;
 import com.multitenancy.systems.specification.ServicesSpecification;
@@ -50,7 +52,7 @@ public class ServiceTraxifyServices {
 
     public DefaultResponseFormat updateService(ServicesTraxifyRequest request, String paramId) {
         Services data = serviceTraxifyRepository.findById(UUID.fromString(paramId))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException(String.format("Data with Id: %s is not found", paramId)));
 
         if (request.getName() != null && !request.getName().isBlank()) {data.setName(request.getName());}
         if (request.getDescription() != null && !request.getDescription().isBlank()) {data.setName(request.getDescription());}

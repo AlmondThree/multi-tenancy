@@ -32,4 +32,8 @@ public class DefaultResponseFormat {
         this.id = id;
     }
 
+    public DefaultResponseFormat(Boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
 }

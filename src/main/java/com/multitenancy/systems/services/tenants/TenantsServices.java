@@ -2,6 +2,8 @@ package com.multitenancy.systems.services.tenants;
 
 import com.multitenancy.systems.dto.tenants.TenantResponse;
 import com.multitenancy.systems.dto.tenants.TenantRequest;
+import com.multitenancy.systems.exceptions.BadRequestException;
+import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.model.Tenants;
 import com.multitenancy.systems.repository.TenantRepository;
 import com.multitenancy.systems.specification.TenantSpecifications;
@@ -58,7 +60,7 @@ public class TenantsServices {
     public TenantResponse updateTenant(TenantRequest request) {
 
         Tenants tenantData = tenantRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException(String.format("Data with Id: %s is not found", request.getId())));
 
         if(request.getName() != null && !request.getName().isBlank()) {tenantData.setName(request.getName());}
         if(request.getShortName() != null && !request.getShortName().isBlank()) {tenantData.setShortName(request.getShortName());}

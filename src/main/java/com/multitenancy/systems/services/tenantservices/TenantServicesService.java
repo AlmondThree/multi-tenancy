@@ -61,7 +61,7 @@ public class TenantServicesService {
     public DefaultResponseFormat updateTenantServices(TenantServicesRequest request, String id, String userId) {
 
         TenantServices data = tenantServicesRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Data not found!"));
+                .orElseThrow(() -> new BadRequestException(String.format("Data with Id: %s is not found", id)));
 
         if(request.getExpiredDate()!= null) {data.setExpiredDate(request.getExpiredDate());}
         if(request.getIsActive() != null) {data.setIsActive(request.getIsActive());}
