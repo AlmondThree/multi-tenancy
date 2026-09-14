@@ -1,6 +1,8 @@
 package com.multitenancy.systems.services.subscription;
 
 import com.multitenancy.systems.dto.subscription.SubscriptionRequest;
+import com.multitenancy.systems.exceptions.BadRequestException;
+import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.model.Subscription;
 import com.multitenancy.systems.repository.SubscriptionRepository;
 import com.multitenancy.systems.specification.SubscriptionSpecifications;
@@ -48,7 +50,7 @@ public class SubscriptionServices {
     public DefaultResponseFormat updateSubscription(SubscriptionRequest request, String id) {
 
         Subscription data = subscriptionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException(String.format("Data with Id: %s is not found", id)));
 
         if (request.getTenantServices() != null && !request.getTenantServices().isBlank()) {data.setTenantServices(request.getTenantServices());}
         if (request.getStatus() != null && !request.getStatus().isBlank()) {data.setStatus(request.getStatus());}
