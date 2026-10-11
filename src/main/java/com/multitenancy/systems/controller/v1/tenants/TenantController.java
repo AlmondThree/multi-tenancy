@@ -7,11 +7,13 @@ import com.multitenancy.systems.dto.tenants.TenantResponse;
 import com.multitenancy.systems.dto.tenants.TenantRequest;
 import com.multitenancy.systems.exceptions.DataNotFoundException;
 import com.multitenancy.systems.model.Tenants;
+import com.multitenancy.systems.services.database.TenantProvisioningService;
 import com.multitenancy.systems.services.tenants.TenantsServices;
 import com.multitenancy.systems.util.format.Pages;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,14 +22,19 @@ import java.util.List;
 @RequestMapping("/v1/tenants")
 public class TenantController {
     private final TenantsServices tenantsServices;
+    private final TenantProvisioningService tenantProvisioningService;
 
-    public TenantController(TenantsServices tenantsServices) {
+    public TenantController(TenantsServices tenantsServices, TenantProvisioningService tenantProvisioningService) {
         this.tenantsServices = tenantsServices;
+        this.tenantProvisioningService = tenantProvisioningService;
     }
 
     @PostMapping
     public ResponseEntity<TenantResponse> createTenant(@RequestBody TenantRequest request) {
         TenantResponse response = tenantsServices.createTenant(request);
+
+        tenantProvisioningService.provisionNewTenantSchema(response.getId());
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

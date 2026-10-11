@@ -1,0 +1,1 @@
+CREATE TABLE inventory (id BIGSERIAL PRIMARY KEY, amount NUMERIC, status VARCHAR(50));
