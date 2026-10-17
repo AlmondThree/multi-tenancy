@@ -1,0 +1,3 @@
+CREATE TABLE inventory (id BIGSERIAL PRIMARY KEY, amount NUMERIC, status VARCHAR(50));
+
+CREATE TABLE inventory_update (id BIGSERIAL PRIMARY KEY, amount NUMERIC, status VARCHAR(50));
